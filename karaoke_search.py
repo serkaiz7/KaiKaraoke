@@ -6,7 +6,7 @@ from tqdm import tqdm
 import subprocess
 
 # Replace with your own API key
-API_KEY = 'AIzaSyDJh3-sX1WNW4Cz5LA3jEtPSUGmqwall3k'
+API_KEY = 'YOUR_YOUTUBE_API_KEY'
 
 def search_youtube_karaoke(query):
     youtube = build('youtube', 'v3', developerKey=API_KEY)
@@ -43,8 +43,8 @@ def open_in_chrome(url):
     video_id = url.split('v=')[1]
     embed_url = f"https://www.youtube.com/embed/{video_id}?autoplay=1&fs=1&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3"
     print(termcolor.colored(f"Opening video: {embed_url}", 'magenta'))
-    # Open URL in Chrome in full screen and landscape mode
-    subprocess.run(['termux-open-url', embed_url])
+    # Open URL in the default browser
+    subprocess.run(['termux-open', embed_url])
 
 def main():
     print(termcolor.colored("Welcome to Karaoke Search!", 'cyan', attrs=['bold']))
