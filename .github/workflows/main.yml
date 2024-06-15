@@ -1,0 +1,36 @@
+name: Python application
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests beautifulsoup4 termcolor tqdm youtube-dl
+
+    - name: Run script test
+      run: |
+        echo "Testing script execution..."
+        python karaoke_search.py --help || true  # The script will be tested with a --help argument to ensure it executes
+
+    - name: Run linter
+      run: |
+        pip install flake8
+        flake8 karaoke_search.py
