@@ -1,22 +1,30 @@
 import os
 import requests
-from bs4 import BeautifulSoup
+from googleapiclient.discovery import build
 import termcolor
 import time
 from tqdm import tqdm
 import webbrowser
 
+# Replace with your own API key
+API_KEY = 'AIzaSyDJh3-sX1WNW4Cz5LA3jEtPSUGmqwall3k'
+
 def search_youtube_karaoke(query):
-    url = f"https://www.youtube.com/results?search_query={query}+karaoke"
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'html.parser')
+    youtube = build('youtube', 'v3', developerKey=API_KEY)
+    request = youtube.search().list(
+        part='snippet',
+        q=f"{query} karaoke",
+        type='video',
+        maxResults=10
+    )
+    response = request.execute()
     
     results = []
-    for video in soup.find_all('a', {'class': 'yt-simple-endpoint style-scope ytd-video-renderer'}):
-        title = video.get('title')
-        link = f"https://www.youtube.com{video.get('href')}"
-        duration = video.find_next('span', {'class': 'style-scope ytd-thumbnail-overlay-time-status-renderer'}).text.strip() if video.find_next('span', {'class': 'style-scope ytd-thumbnail-overlay-time-status-renderer'}) else 'N/A'
-        channel = video.find_next('a', {'class': 'yt-simple-endpoint style-scope yt-formatted-string'}).text.strip() if video.find_next('a', {'class': 'yt-simple-endpoint style-scope yt-formatted-string'}) else 'N/A'
+    for item in response['items']:
+        title = item['snippet']['title']
+        link = f"https://www.youtube.com/watch?v={item['id']['videoId']}"
+        channel = item['snippet']['channelTitle']
+        duration = 'N/A'  # You can fetch video details in another API call if needed
         results.append({'title': title, 'link': link, 'duration': duration, 'channel': channel})
     
     return results
