@@ -3,8 +3,6 @@ from googleapiclient.discovery import build
 import termcolor
 import time
 from tqdm import tqdm
-import requests
-from bs4 import BeautifulSoup
 import subprocess
 
 # Replace with your own API key
@@ -41,27 +39,12 @@ def display_results(results):
         print(termcolor.colored(f"   Link: {result['link']}", 'blue'))
         print('-' * 50)
 
-def get_download_link(youtube_url):
-    ssyoutube_url = f"https://ssyoutube.com/en212tP/youtube-to-mp4?url={youtube_url}"
-    response = requests.get(ssyoutube_url)
-    soup = BeautifulSoup(response.content, 'html.parser')
-
-    # Locate the 720p download link
-    download_link = None
-    for link in soup.find_all('a', href=True):
-        if '720' in link.text:
-            download_link = link['href']
-            break
-    
-    if download_link:
-        return download_link
-    else:
-        print(termcolor.colored("720p link not found.", 'red'))
-        return None
-
-def open_in_mpv(url):
-    print(termcolor.colored(f"Opening video in MPV player: {url}", 'magenta'))
-    subprocess.run(['mpv', url])
+def open_in_chrome(url):
+    video_id = url.split('v=')[1]
+    embed_url = f"https://www.youtube.com/embed/{video_id}?autoplay=1&fs=1&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3"
+    print(termcolor.colored(f"Opening video: {embed_url}", 'magenta'))
+    # Open URL in Chrome in full screen and landscape mode
+    subprocess.run(['termux-open-url', embed_url])
 
 def main():
     print(termcolor.colored("Welcome to Karaoke Search!", 'cyan', attrs=['bold']))
@@ -82,9 +65,7 @@ def main():
                 choice = int(input("Enter the number of the song you want to play: "))
                 if 1 <= choice <= len(results):
                     selected_video = results[choice - 1]
-                    download_link = get_download_link(selected_video['link'])
-                    if download_link:
-                        open_in_mpv(download_link)
+                    open_in_chrome(selected_video['link'])
                 else:
                     print(termcolor.colored("Invalid choice.", 'red'))
             except ValueError:
