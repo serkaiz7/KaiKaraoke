@@ -4,7 +4,8 @@ from googleapiclient.discovery import build
 import termcolor
 import time
 from tqdm import tqdm
-import webbrowser
+import subprocess
+import yt_dlp
 
 # Replace with your own API key
 API_KEY = 'AIzaSyDJh3-sX1WNW4Cz5LA3jEtPSUGmqwall3k'
@@ -40,11 +41,27 @@ def display_results(results):
         print(termcolor.colored(f"   Link: {result['link']}", 'blue'))
         print('-' * 50)
 
-def open_in_chrome(url):
-    video_id = url.split('v=')[1]
-    embed_url = f"https://www.youtube.com/embed/{video_id}?autoplay=1&fs=1"
-    print(termcolor.colored(f"Opening video in Chrome: {embed_url}", 'magenta'))
-    webbrowser.open(embed_url)
+def fetch_video_url(youtube_url):
+    ydl_opts = {
+        'format': 'best',
+        'quiet': True,
+        'skip_download': True,
+    }
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info_dict = ydl.extract_info(youtube_url, download=False)
+        video_url = info_dict.get("url", None)
+    return video_url
+
+def open_in_mpv(url):
+    mod_url = url.replace("youtube.com", "yout-ube.com")
+    print(termcolor.colored(f"Fetching direct video URL for: {mod_url}", 'magenta'))
+    
+    video_url = fetch_video_url(url)
+    if video_url:
+        print(termcolor.colored(f"Playing video in MPV: {video_url}", 'magenta'))
+        subprocess.run(['mpv', '--fullscreen', video_url])
+    else:
+        print(termcolor.colored("Failed to fetch video URL.", 'red'))
 
 def main():
     print(termcolor.colored("Welcome to Karaoke Search!", 'cyan', attrs=['bold']))
@@ -63,7 +80,7 @@ def main():
             choice = int(input("Enter the number of the song you want to play: "))
             if 1 <= choice <= len(results):
                 selected_video = results[choice - 1]
-                open_in_chrome(selected_video['link'])
+                open_in_mpv(selected_video['link'])
             else:
                 print(termcolor.colored("Invalid choice. Exiting.", 'red'))
         except ValueError:
