@@ -48,18 +48,19 @@ def main():
     results = search_youtube_karaoke(query)
     display_results(results)
     
-    if not results:
-        return
-
-    try:
-        choice = int(input("Enter the number of the song you want to play: "))
-        if 1 <= choice <= len(results):
-            selected_video = results[choice - 1]
-            open_in_chrome(selected_video['link'])
-        else:
-            print(termcolor.colored("Invalid choice. Exiting.", 'red'))
-    except ValueError:
-        print(termcolor.colored("Invalid input. Please enter a number.", 'red'))
+    # Check if there are results before prompting for selection
+    if results:
+        try:
+            choice = int(input("Enter the number of the song you want to play: "))
+            if 1 <= choice <= len(results):
+                selected_video = results[choice - 1]
+                open_in_chrome(selected_video['link'])
+            else:
+                print(termcolor.colored("Invalid choice. Exiting.", 'red'))
+        except ValueError:
+            print(termcolor.colored("Invalid input. Please enter a number.", 'red'))
+    else:
+        print(termcolor.colored("No videos to select. Exiting.", 'red'))
 
 if __name__ == "__main__":
     main()
