@@ -21,7 +21,7 @@ def search_youtube_karaoke(query):
     results = []
     for item in response['items']:
         title = item['snippet']['title']
-        link = f"https://www.youtube.com/watch?v={item['id']['videoId']}"
+        link = f"https://m.youtube.com/watch?v={item['id']['videoId']}"
         channel = item['snippet']['channelTitle']
         duration = 'N/A'  # You can fetch video details in another API call if needed
         results.append({'title': title, 'link': link, 'duration': duration, 'channel': channel})
@@ -41,7 +41,7 @@ def display_results(results):
 
 def open_in_chrome(url):
     video_id = url.split('v=')[1]
-    embed_url = f"https://www.youtube.com/embed/{video_id}?autoplay=1&fs=1&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3"
+    embed_url = f"https://m.youtube.com/embed/{video_id}?autoplay=1&fs=1&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3"
     print(termcolor.colored(f"Opening video: {embed_url}", 'magenta'))
     # Open URL in the default browser
     subprocess.run(['termux-open', embed_url])
@@ -59,21 +59,24 @@ def main():
         results = search_youtube_karaoke(query)
         display_results(results)
         
-        # Check if there are results before prompting for selection
-        if results:
+        while results:
             try:
                 choice = int(input("Enter the number of the song you want to play: "))
                 if 1 <= choice <= len(results):
                     selected_video = results[choice - 1]
                     open_in_chrome(selected_video['link'])
+                    break
                 else:
                     print(termcolor.colored("Invalid choice.", 'red'))
+                    another_choice = input("Do you want to select another number? (y/n): ").strip().lower()
+                    if another_choice != 'y':
+                        break
             except ValueError:
                 print(termcolor.colored("Invalid input. Please enter a number.", 'red'))
-        else:
-            print(termcolor.colored("No videos to select.", 'red'))
+                another_choice = input("Do you want to select another number? (y/n): ").strip().lower()
+                if another_choice != 'y':
+                    break
         
-        # Prompt to search again or exit
         search_again = input("Do you want to search for another song? (y/n): ").strip().lower()
         if search_again != 'y':
             print(termcolor.colored("Goodbye!", 'cyan', attrs=['bold']))
