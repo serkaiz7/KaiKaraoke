@@ -41,9 +41,10 @@ def display_results(results):
         print('-' * 50)
 
 def open_in_chrome(url):
-    modified_url = url.replace("youtube.com", "yout-ube.com")
-    print(termcolor.colored(f"Opening video in Chrome: {modified_url}", 'magenta'))
-    webbrowser.open(f'googlechrome://navigate?url={modified_url}')
+    video_id = url.split('v=')[1]
+    embed_url = f"https://www.youtube.com/embed/{video_id}?autoplay=1&fs=1"
+    print(termcolor.colored(f"Opening video in Chrome: {embed_url}", 'magenta'))
+    webbrowser.open(embed_url)
 
 def main():
     print(termcolor.colored("Welcome to Karaoke Search!", 'cyan', attrs=['bold']))
