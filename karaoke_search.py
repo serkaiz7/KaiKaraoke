@@ -39,11 +39,9 @@ def display_results(results):
         print(termcolor.colored(f"   Link: {result['link']}", 'blue'))
         print('-' * 50)
 
-def open_in_chrome(url):
-    video_id = url.split('v=')[1]
-    embed_url = f"https://www.youtube.com/embed/{video_id}?autoplay=1&fs=1"
-    print(termcolor.colored(f"Opening video: {embed_url}", 'magenta'))
-    subprocess.run(['termux-open', embed_url])
+def open_in_mpv(url):
+    print(termcolor.colored(f"Opening video in MPV player: {url}", 'magenta'))
+    subprocess.run(['mpv', url])
 
 def main():
     print(termcolor.colored("Welcome to Karaoke Search!", 'cyan', attrs=['bold']))
@@ -64,7 +62,7 @@ def main():
                 choice = int(input("Enter the number of the song you want to play: "))
                 if 1 <= choice <= len(results):
                     selected_video = results[choice - 1]
-                    open_in_chrome(selected_video['link'])
+                    open_in_mpv(selected_video['link'])
                 else:
                     print(termcolor.colored("Invalid choice.", 'red'))
             except ValueError:
