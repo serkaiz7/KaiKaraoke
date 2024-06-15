@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import termcolor
 import time
 from tqdm import tqdm
+import webbrowser
 
 def search_youtube_karaoke(query):
     url = f"https://www.youtube.com/results?search_query={query}+karaoke"
@@ -31,12 +32,10 @@ def display_results(results):
         print(termcolor.colored(f"   Link: {result['link']}", 'blue'))
         print('-' * 50)
 
-def play_video(url):
-    print(termcolor.colored(f"Fetching video URL...", 'magenta'))
-    for _ in tqdm(range(50), desc="Processing", ascii=False, ncols=75):
-        time.sleep(0.05)
-    print(termcolor.colored(f"Playing video: {url}", 'magenta'))
-    os.system(f"mpv $(youtube-dl -g {url})")
+def open_in_chrome(url):
+    modified_url = url.replace("youtube.com", "yout-ube.com")
+    print(termcolor.colored(f"Opening video in Chrome: {modified_url}", 'magenta'))
+    webbrowser.open(f'googlechrome://navigate?url={modified_url}')
 
 def main():
     print(termcolor.colored("Welcome to Karaoke Search!", 'cyan', attrs=['bold']))
@@ -56,7 +55,7 @@ def main():
         choice = int(input("Enter the number of the song you want to play: "))
         if 1 <= choice <= len(results):
             selected_video = results[choice - 1]
-            play_video(selected_video['link'])
+            open_in_chrome(selected_video['link'])
         else:
             print(termcolor.colored("Invalid choice. Exiting.", 'red'))
     except ValueError:
