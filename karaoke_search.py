@@ -6,7 +6,7 @@ from tqdm import tqdm
 import subprocess
 
 # Replace with your own API key
-API_KEY = 'YOUR_YOUTUBE_API_KEY'
+API_KEY = 'AIzaSyDJh3-sX1WNW4Cz5LA3jEtPSUGmqwall3k'
 
 def search_youtube_karaoke(query):
     youtube = build('youtube', 'v3', developerKey=API_KEY)
