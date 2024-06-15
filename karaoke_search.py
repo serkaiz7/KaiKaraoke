@@ -11,16 +11,19 @@ def search_youtube_karaoke(query):
     soup = BeautifulSoup(response.text, 'html.parser')
     
     results = []
-    for video in soup.find_all('a', {'class': 'yt-uix-tile-link'}):
+    for video in soup.find_all('a', {'class': 'yt-simple-endpoint style-scope ytd-video-renderer'}):
         title = video.get('title')
         link = f"https://www.youtube.com{video.get('href')}"
-        duration = video.find_next_sibling('span', {'class': 'video-time'}).text if video.find_next_sibling('span', {'class': 'video-time'}) else 'N/A'
-        channel = video.find_next('div', {'class': 'yt-lockup-byline'}).text.strip() if video.find_next('div', {'class': 'yt-lockup-byline'}) else 'N/A'
+        duration = video.find_next('span', {'class': 'style-scope ytd-thumbnail-overlay-time-status-renderer'}).text.strip() if video.find_next('span', {'class': 'style-scope ytd-thumbnail-overlay-time-status-renderer'}) else 'N/A'
+        channel = video.find_next('a', {'class': 'yt-simple-endpoint style-scope yt-formatted-string'}).text.strip() if video.find_next('a', {'class': 'yt-simple-endpoint style-scope yt-formatted-string'}) else 'N/A'
         results.append({'title': title, 'link': link, 'duration': duration, 'channel': channel})
     
     return results
 
 def display_results(results):
+    if not results:
+        print(termcolor.colored("No results found. Please try a different query.", 'red'))
+        return
     for i, result in enumerate(results):
         print(termcolor.colored(f"{i + 1}. Title: {result['title']}", 'cyan'))
         print(termcolor.colored(f"   Channel: {result['channel']}", 'green'))
@@ -46,12 +49,18 @@ def main():
     results = search_youtube_karaoke(query)
     display_results(results)
     
-    choice = int(input("Enter the number of the song you want to play: "))
-    if 1 <= choice <= len(results):
-        selected_video = results[choice - 1]
-        play_video(selected_video['link'])
-    else:
-        print(termcolor.colored("Invalid choice. Exiting.", 'red'))
+    if not results:
+        return
+
+    try:
+        choice = int(input("Enter the number of the song you want to play: "))
+        if 1 <= choice <= len(results):
+            selected_video = results[choice - 1]
+            play_video(selected_video['link'])
+        else:
+            print(termcolor.colored("Invalid choice. Exiting.", 'red'))
+    except ValueError:
+        print(termcolor.colored("Invalid input. Please enter a number.", 'red'))
 
 if __name__ == "__main__":
     main()
