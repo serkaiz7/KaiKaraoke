@@ -59,7 +59,12 @@ def open_in_mpv(url):
     video_url = fetch_video_url(url)
     if video_url:
         print(termcolor.colored(f"Playing video in MPV: {video_url}", 'magenta'))
-        subprocess.run(['mpv', '--fullscreen', video_url])
+        try:
+            subprocess.run(['mpv', '--fullscreen', video_url], check=True)
+        except FileNotFoundError:
+            print(termcolor.colored("MPV not found. Please ensure MPV is installed and in your PATH.", 'red'))
+        except subprocess.CalledProcessError as e:
+            print(termcolor.colored(f"An error occurred while trying to play the video: {e}", 'red'))
     else:
         print(termcolor.colored("Failed to fetch video URL.", 'red'))
 
@@ -77,8 +82,7 @@ def main():
     # Check if there are results before prompting for selection
     if results:
         try:
-            choice = int(input("Enter the number of the song you want to play: "))
-            if 1 <= choice <= len(results):
+            choice = int(input("Enter the number of the song you want to play: "))if 1 <= choice <= len(results):
                 selected_video = results[choice - 1]
                 open_in_mpv(selected_video['link'])
             else:
